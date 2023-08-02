@@ -28,18 +28,16 @@ public class OrderRestController {
         OrderResponse.SaveDTO saveDTO = orderService.saveAll(userDetails.getUser());
         ApiUtils.ApiResult<?> apiResult = ApiUtils.success(saveDTO);
         return ResponseEntity.ok(apiResult);
-
     }
 
     // (기능10) 주문 결과 확인 GET
     // /orders/{id}
 
     @GetMapping("/orders/{id}")
-    public ResponseEntity<?> findById(@PathVariable int id,@AuthenticationPrincipal CustomUserDetails userDetails) {
-        OrderResponse.FindByIdDTO findByIdDTO = orderService.findById(id,userDetails.getUser());
-        ApiUtils.ApiResult<?> apiResult = ApiUtils.success(findByIdDTO);
+    public ResponseEntity<?> findById(@PathVariable int id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        OrderResponse.FindByIdDTO responseDTOs = orderService.findById(id, userDetails.getUser());
+        ApiUtils.ApiResult<?> apiResult = ApiUtils.success(responseDTOs);
         return ResponseEntity.ok(apiResult);
-
     }
 
 }

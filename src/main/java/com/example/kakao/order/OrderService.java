@@ -23,6 +23,7 @@ public class OrderService {
     private final ItemJPARepository itemJPARepository;
     private final CartJPARepository cartJPARepository;
 
+    @Transactional
     public OrderResponse.SaveDTO saveAll(User sessionuser){
 
         List<Cart> cartList = cartJPARepository.findByUserIdOrderByOptionIdAsc(sessionuser.getId());
@@ -36,29 +37,39 @@ public class OrderService {
         List<Item> itemList = cartList.stream()
                 .map( cart -> Item.builder()
                         .option(cart.getOption())
-                        .order(order)
+                        .order(orderPS)
                         .quantity(cart.getQuantity())
-                        .price(cart.getPrice()).build())
+                        .price(cart.getPrice())
+                        .build())
                 .collect(Collectors.toList());
 
         List<Item> itemListPS = itemJPARepository.saveAll(itemList);
 
         //2. 장바구니 초기화
-        cartJPARepository.deleteAll();
+        cartJPARepository.deleteAll(cartList);
 
         return new OrderResponse.SaveDTO(orderPS,itemListPS);
     }
 
+    @Transactional
     public OrderResponse.FindByIdDTO findById(int id,User sessionuser){
-
-        //주문번호가 없을 경우 예외 처리
-        if ( orderJPARepository.findById(id).isEmpty()){
-            throw new Exception400("해당 주문번호의 주문이 없습니다.");
+        Optional<Order> orderPS = orderJPARepository.findById(id);
+        if (orderPS.isPresent()) {
+            List<Item> itemListPS = itemJPARepository.findByOrderId(id);
+            return new OrderResponse.FindByIdDTO(id, itemListPS);
         }
-
-        List<Item> itemList = itemJPARepository.findByOrderId(id);
-
-        return new OrderResponse.FindByIdDTO(id,itemList);
+        else {
+            throw new Exception400("존재하지 않는 주문 번호");
+        }
+//        //주문번호가 없을 경우 예외 처리
+//        if ( orderJPARepository.findById(id).isEmpty()){
+//            throw new Exception400("해당 주문번호의 주문이 없습니다.");
+//        }
+//
+//
+//        List<Item> itemList = itemJPARepository.findByOrderId(id);
+//
+//        return new OrderResponse.FindByIdDTO(id,itemList);
 
     }
 }
