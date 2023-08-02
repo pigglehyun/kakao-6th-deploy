@@ -25,14 +25,14 @@ public class OrderService {
 
     public OrderResponse.SaveDTO saveAll(User sessionuser){
 
-        List<Cart> cartList = cartJPARepository.findAllByUserId(sessionuser.getId());
+        List<Cart> cartList = cartJPARepository.findByUserIdOrderByOptionIdAsc(sessionuser.getId());
         //1. 카트에 아무것도 없으면 예외 처리
         if( cartList.isEmpty() ){
             throw new Exception400("카트가 비어있습니다.");
         }
 
         Order order = Order.builder().user(sessionuser).build();
-        orderJPARepository.save(order);
+        Order orderPS = orderJPARepository.save(order);
         List<Item> itemList = cartList.stream()
                 .map( cart -> Item.builder()
                         .option(cart.getOption())
@@ -40,12 +40,13 @@ public class OrderService {
                         .quantity(cart.getQuantity())
                         .price(cart.getPrice()).build())
                 .collect(Collectors.toList());
-        itemJPARepository.saveAll(itemList);
+
+        List<Item> itemListPS = itemJPARepository.saveAll(itemList);
 
         //2. 장바구니 초기화
-        cartJPARepository.deleteByUserId(sessionuser.getId());
+        cartJPARepository.deleteAll();
 
-        return new OrderResponse.SaveDTO(order,itemList);
+        return new OrderResponse.SaveDTO(orderPS,itemListPS);
     }
 
     public OrderResponse.FindByIdDTO findById(int id,User sessionuser){
