@@ -48,12 +48,13 @@ public class OrderService {
         return new OrderResponse.SaveDTO(order,itemList);
     }
 
-    public OrderResponse.FindByIdDTO findById(int id){
+    public OrderResponse.FindByIdDTO findById(int id,User sessionuser){
 
         //주문번호가 없을 경우 예외 처리
         if ( orderJPARepository.findByOrderId(id).isEmpty()){
             throw new Exception400("해당 주문번호의 주문이 없습니다.");
         }
+        Order order = orderJPARepository.
         List<Item> itemList = itemJPARepository.findByOrderId(id);
 
         return new OrderResponse.FindByIdDTO(id,itemList);
