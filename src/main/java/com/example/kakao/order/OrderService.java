@@ -54,10 +54,10 @@ public class OrderService {
         if ( orderJPARepository.findByOrderId(id).isEmpty()){
             throw new Exception400("해당 주문번호의 주문이 없습니다.");
         }
-        Order order = orderJPARepository.
+        Order order = orderJPARepository.findByOrderId(id);
         List<Item> itemList = itemJPARepository.findByOrderId(id);
 
-        return new OrderResponse.FindByIdDTO(id,itemList);
+        return new OrderResponse.FindByIdDTO(order,itemList);
 
     }
 }
