@@ -68,8 +68,8 @@ public class OrderResponse {
         private List<ProductDTO> products;
         private int totalPrice;
 
-        public FindByIdDTO(Order order, List<Item> itemList){
-            this.orderId = order.getId();
+        public FindByIdDTO(int orderId, List<Item> itemList){
+            this.orderId = orderId;
             this.products = itemList.stream()
                     .map(item -> item.getOption().getProduct()).distinct()
                     .map(product -> new ProductDTO(product, itemList)).collect(Collectors.toList());
