@@ -59,6 +59,35 @@ public class CartRestControllerTest extends MyRestDoc {
 
     @WithUserDetails(value = "ssarmango@nate.com")
     @Test
+    public void add_no_option_fail_test() throws Exception {
+        // given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item = new CartRequest.SaveDTO();
+        item.setOptionId(1000);
+        item.setQuantity(5);
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andExpect(jsonPath("$.error.message").value("해당 옵션을 찾을 수 없습니다 : 1000"));
+        resultActions.andExpect(jsonPath("$.error.status").value("404"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
     public void findAll_test() throws Exception {
         // given teardown
 
@@ -84,6 +113,7 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.totalPrice").value(310900));
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
+
 
     @WithUserDetails(value = "ssarmango@nate.com")
     @Test
