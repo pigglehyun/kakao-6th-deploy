@@ -55,7 +55,13 @@ public class OrderService {
 
     @Transactional
     public OrderResponse.FindByIdDTO findById(int id,User sessionuser){
-
+//        Order order = orderJPARepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 주문 번호입니다."));
+//        if (order.getUser().getId() != sessionuser.getId()) {
+//            throw new Exception403("현재 계정으로 해당 주문을 조회할 수 없습니다.");
+//        }
+//
+//        List<Item> items = itemJPARepository.findByOrderId(id);
+//        return new OrderResponse.FindByIdDTO(order, items);
         //주문번호가 없을 경우 예외 처리
         Order order = orderJPARepository.findById(id).orElseThrow(() -> new Exception404("해당 주문번호의 주문이 없습니다."));
 
