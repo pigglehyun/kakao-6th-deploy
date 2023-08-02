@@ -1,6 +1,8 @@
 package com.example.kakao.order;
 
 import com.example.kakao._core.errors.exception.Exception400;
+import com.example.kakao._core.errors.exception.Exception403;
+import com.example.kakao._core.errors.exception.Exception404;
 import com.example.kakao.cart.Cart;
 import com.example.kakao.cart.CartJPARepository;
 import com.example.kakao.order.item.Item;
@@ -53,23 +55,13 @@ public class OrderService {
 
     @Transactional
     public OrderResponse.FindByIdDTO findById(int id,User sessionuser){
-        Optional<Order> orderPS = orderJPARepository.findById(id);
-        if (orderPS.isPresent()) {
-            List<Item> itemListPS = itemJPARepository.findByOrderId(id);
-            return new OrderResponse.FindByIdDTO(id, itemListPS);
-        }
-        else {
-            throw new Exception400("존재하지 않는 주문 번호");
-        }
-//        //주문번호가 없을 경우 예외 처리
-//        if ( orderJPARepository.findById(id).isEmpty()){
-//            throw new Exception400("해당 주문번호의 주문이 없습니다.");
-//        }
-//
-//
-//        List<Item> itemList = itemJPARepository.findByOrderId(id);
-//
-//        return new OrderResponse.FindByIdDTO(id,itemList);
+
+        //주문번호가 없을 경우 예외 처리
+        Order order = orderJPARepository.findById(id).orElseThrow(() -> new Exception404("해당 주문번호의 주문이 없습니다."));
+
+        List<Item> itemList = itemJPARepository.findByOrderId(id);
+
+        return new OrderResponse.FindByIdDTO(order,itemList);
 
     }
 }

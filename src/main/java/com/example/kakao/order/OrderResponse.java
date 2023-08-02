@@ -66,12 +66,12 @@ public class OrderResponse {
     @ToString
     public static class FindByIdDTO{
 
-        private int orderId;
+        private int id;
         private List<ProductDTO> products;
         private int totalPrice;
 
-        public FindByIdDTO(int orderId, List<Item> itemList){
-            this.orderId = orderId;
+        public FindByIdDTO(Order order, List<Item> itemList){
+            this.id = order.getId();
             this.products = itemList.stream()
                     .map(item -> item.getOption().getProduct()).distinct()
                     .map(product -> new ProductDTO(product, itemList)).collect(Collectors.toList());
@@ -94,13 +94,13 @@ public class OrderResponse {
             @Getter
             @Setter
             public class ItemDTO{
-                public int itemId;
+                public int id;
                 public String optionName;
                 public int quantity;
                 public int price;
 
                 public ItemDTO(Item item){
-                    this.itemId = item.getId();
+                    this.id = item.getId();
                     this.optionName = item.getOption().getOptionName();
                     this.quantity = item.getQuantity();
                     this.price = item.getOption().getPrice() * item.getQuantity();                }
